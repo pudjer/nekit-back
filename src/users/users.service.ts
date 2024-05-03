@@ -1,5 +1,5 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
-import {UserCreateDTO, User, UserHashedDTO, UserModel} from "./models/User";
+import {UserCreateDTO, User, UserHashedDTO, UserModel, UserAdminCreateDTO} from "./models/User";
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
@@ -19,7 +19,6 @@ export class UserService {
         @InjectModel(User.name) private userModel: Model<User>,
         private jwtService: JwtService,
         private readonly configService: ConfigService,
-        @Inject('EMAIL_FUNC') private emailFunc: (token: string) => string
     ) {
         this.refreshExpTime = this.configService.get('JWT_REFRESH_EXPIRATION_TIME')
         this.accessExpTime = this.configService.get('JWT_ACCESS_EXPIRATION_TIME')
@@ -58,7 +57,7 @@ export class UserService {
     }
 
 
-    async register(user: UserCreateDTO) {
+    async register(user: UserCreateDTO|UserAdminCreateDTO) {
         const hashedPassword = await bcrypt.hash(user.password, 4)
         const { password, ...userNoPassw } = user
         const toCreate: UserHashedDTO = {

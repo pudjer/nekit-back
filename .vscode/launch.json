@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {   
+            "type":"node-terminal",
+            "name": "debug nest",
+            "request": "launch",
+            "command": "npm run start:debug",
+            "sourceMaps": true,
+        },
+        {
+            "request": "launch",
+            "type": "node-terminal",
+            "name": "e2e",
+            "command": "npm run test:e2e",
+            "sourceMaps": true,
+        },
+    ],
+
+}

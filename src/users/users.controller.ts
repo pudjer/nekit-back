@@ -2,13 +2,13 @@ import { Body, Controller, Delete, Get, Patch, Post, Response, UseGuards } from 
 import { LocalAuthGuard } from './local/local-auth.guard';
 import { Response as ExpressResponse } from 'express';
 import { UserParamDecorator } from './decorators/UserDecorator';
-import { UserCreateDTO, UserLoginDTO, UserModel, UserSelfDTO } from './models/User';
+import { User, UserAdminCreateDTO, UserCreateDTO, UserLoginDTO, UserModel, UserSelfDTO } from './models/User';
 import { AccessToken } from './models/Tokens';
-import { TOKEN_NAME } from './jwt/jwt.strategy';
-import { ApiBody, ApiNoContentResponse, ApiProperty, ApiResponse } from '@nestjs/swagger';
-import { IsEmail } from 'class-validator';
+import { TOKEN_NAME } from './jwtAuth/jwt.strategy';
+import { ApiBody, ApiNoContentResponse, ApiResponse } from '@nestjs/swagger';
 import { AuthRequired } from './decorators/AuthRequired';
 import { UserService } from './users.service';
+import { AdminRequired } from './admin/AdminDecorator';
 
 
 @Controller('user')
@@ -46,6 +46,15 @@ export class UserController {
     return await this.userService.register(user);
   }
   
+
+
+  @ApiResponse({type: User})
+  @Post("admin")
+  @AdminRequired
+  async adminCreate(@Body() user: UserAdminCreateDTO): Promise<User> {    
+    return await this.userService.register(user);
+  }
+
 
   @AuthRequired
   @ApiResponse({ type: UserSelfDTO })

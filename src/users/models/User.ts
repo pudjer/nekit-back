@@ -32,6 +32,10 @@ export class User{
     @Prop({ type: () => Boolean, default: false })
     blocked: boolean
 
+    @ApiProperty({type: Boolean})
+    @IsBoolean()
+    @Prop({ type: () => Boolean, default: false })
+    isAdmin: boolean
 
     @ApiProperty({type: Date})
     @Prop({ type: () => Date, default: () => new Date() })
@@ -48,8 +52,7 @@ export class User{
     @Prop({ type: () => Date, default: () => new Date(0) })
     valid_since: Date
 
-    @Prop({ type: () => String, required: false})
-    emailToken?: string
+
 }
 
 export class UserSelfDTO extends OmitType(
@@ -75,6 +78,11 @@ export class UserCreateDTO extends PickType(
     password: string
 
 }
+
+export class UserAdminCreateDTO extends IntersectionType(
+    UserCreateDTO,
+    OmitType(User, ['hashedPassword', '_id'])
+) {}
 
 export class UserLoginDTO extends PickType(
     UserCreateDTO,

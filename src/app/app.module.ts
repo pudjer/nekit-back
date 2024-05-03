@@ -7,7 +7,7 @@ import {APP_INTERCEPTOR, APP_PIPE} from "@nestjs/core";
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { MongooseModule } from '@nestjs/mongoose';
 import { stripInterceptor } from './stripInterceptor';
-import { privateAttributes, validationSchema } from '../config/variables';
+import { validationSchema } from '../config/variables';
 
 @Module({
   imports: [
@@ -32,7 +32,7 @@ import { privateAttributes, validationSchema } from '../config/variables';
     },
     {
       provide: APP_INTERCEPTOR,
-      useValue: new stripInterceptor(privateAttributes)
+      useValue: new stripInterceptor(['password', 'hashedPassword'])
     }
   ]
 })
