@@ -19,5 +19,3 @@ export const validationSchema = Joi.object({
     SMTP_USER: Joi.string(),
     SMTP_PASSWORD: Joi.string(),
 })
-
-export const messagePattern = 'IF U DONT TRY TO REGISTER EMAIL ON MYSITE SKIP THIS MESSAGE, overwise click:'

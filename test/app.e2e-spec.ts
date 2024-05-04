@@ -36,7 +36,26 @@ describe('AppController (e2e)', () => {
   })
 
 
+  it(`/user/ (POST): success username: , password: `, async () => {
+    const agent = testRequest.agent(app.getHttpServer())
+    const request: UserCreateDTO = {
+        username: "aljfladjflkajs",
+        password: "djflj343DKFJD@",
+      }
+    const result = await agent
+      .post('/user')
+      .send(request);
+    const { date_registered, username: usernameres } = result.body
+    expect(result.statusCode).toEqual(201);
+    expect(typeof date_registered).toBe("string")
+    expect(usernameres).toBe("aljfladjflkajs")
 
+
+    const change = agent.patch('/user').send({password: "434@jfjdasdJKJ", username: 'fdfd'})
+
+    const del = await agent.delete('/user').send()
+    expect(del.body.username).toBe('fdfd')
+  });
 
 
   

@@ -5,7 +5,6 @@ import { JwtModule } from '@nestjs/jwt';
 import {ConfigService} from "@nestjs/config";
 import {JwtStrategy} from "./jwtAuth/jwt.strategy";
 import { UserController } from './users.controller';
-import { messagePattern } from '../config/variables';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserScheme } from './models/User';
 import { UserService } from './users.service';
@@ -23,14 +22,7 @@ import { UserService } from './users.service';
       { name: User.name, schema: UserScheme },
     ])
   ],
-  providers: [LocalStrategy, JwtStrategy, UserService,
-  {
-    useValue: (token: string)=>{
-      return messagePattern + ' '+ token
-    },
-    provide: 'EMAIL_FUNC'
-  }
-  ],
+  providers: [LocalStrategy, JwtStrategy, UserService],
   controllers: [UserController],
 })
 export class UserModule {}

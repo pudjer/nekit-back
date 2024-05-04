@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Patch, Post, Response, UseGuards } from 
 import { LocalAuthGuard } from './local/local-auth.guard';
 import { Response as ExpressResponse } from 'express';
 import { UserParamDecorator } from './decorators/UserDecorator';
-import { User, UserAdminCreateDTO, UserCreateDTO, UserLoginDTO, UserModel, UserSelfDTO } from './models/User';
+import { User, UserAdminCreateDTO, UserChangeDto, UserCreateDTO, UserLoginDTO, UserModel, UserSelfDTO } from './models/User';
 import { AccessToken } from './models/Tokens';
 import { TOKEN_NAME } from './jwtAuth/jwt.strategy';
 import { ApiBody, ApiNoContentResponse, ApiResponse } from '@nestjs/swagger';
@@ -69,14 +69,23 @@ export class UserController {
   async delete(@UserParamDecorator() user: UserModel) {
     await user.deleteOne()
   }
-
+  
   @ApiResponse({ type: UserSelfDTO })
   @AuthRequired
   @Patch()
+  async change(@UserParamDecorator() user: UserModel, @Body() toChange: UserChangeDto) {
+    return await this.userService.change(user.id, toChange)
+  }
+
+  @ApiResponse({ type: UserSelfDTO })
+  @AuthRequired
+  @Patch("invalidate")
   async invalidateByTime(@UserParamDecorator() user: UserModel) {
     user.valid_since = new Date()
     return await user.save()
   }
+
+
 
   
 }

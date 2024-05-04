@@ -1,5 +1,5 @@
 import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
-import {UserCreateDTO, User, UserHashedDTO, UserModel, UserAdminCreateDTO} from "./models/User";
+import {UserCreateDTO, User, UserHashedDTO, UserModel, UserAdminCreateDTO, UserSelfDTO, UserChangeDto} from "./models/User";
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
@@ -48,13 +48,6 @@ export class UserService {
         return user
     }
 
-    async setAttributes(username: string, attributes_values: Map<User>){
-        const user = await this.findByUsername(username)
-        for(const attr in attributes_values){
-            user[attr] = attributes_values[attr]
-        }
-        await user.save()
-    }
 
 
     async register(user: UserCreateDTO|UserAdminCreateDTO) {
@@ -66,6 +59,17 @@ export class UserService {
         };
 
         return await this.create(toCreate)
+    }
+
+    async change(id: string, toChange: UserChangeDto): Promise<UserModel> {
+        const user = await this.userModel.findById(id)
+        const hashedPassword = await bcrypt.hash(toChange.password, 4)
+        const { password, ...userNoPassw } = toChange
+        for(const key in toChange){
+            user[key] = toChange[key]
+        }
+        await user.save()
+        return user
     }
     async getTokens(user: User): Promise<Tokens> {
         const userf = (await this.findByUsername(user.username)).toObject()

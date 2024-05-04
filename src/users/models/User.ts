@@ -1,5 +1,5 @@
 import { Prop, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty, ApiPropertyOptional, IntersectionType, OmitType, PickType } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional, IntersectionType, OmitType, PickType , PartialType} from "@nestjs/swagger"
 import { IsBoolean, IsEmail, IsISO8601, IsNumber, IsOptional, IsString, IsStrongPassword, Matches, Max, MaxLength, MinLength, ValidateNested } from "class-validator";
 import { Schema } from "@nestjs/mongoose";
 import { HydratedDocument } from "mongoose";
@@ -25,7 +25,7 @@ export class User{
     email?: string
 
     @ApiProperty({ type: String })
-    _id: number
+    _id: string
 
     @ApiProperty({type: Boolean})
     @IsBoolean()
@@ -78,6 +78,8 @@ export class UserCreateDTO extends PickType(
     password: string
 
 }
+
+export class UserChangeDto extends PartialType(UserCreateDTO){}
 
 export class UserAdminCreateDTO extends IntersectionType(
     UserCreateDTO,
