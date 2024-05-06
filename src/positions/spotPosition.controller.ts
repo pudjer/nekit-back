@@ -1,32 +1,33 @@
-import { Body, Controller, Delete, Get, Param, Patch, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, UnauthorizedException } from "@nestjs/common";
 import { SpotPositionService } from "./SpotPosition.service";
-import { SpotPosition, changeSpotPositionDTO } from "./model/SpotPosition";
+import { SpotPosition, SpotPositionWithoutId, changeSpotPositionDTO } from "./model/SpotPosition";
 import { ApiNoContentResponse, ApiResponse } from "@nestjs/swagger";
 import { AuthRequired } from "src/users/decorators/AuthRequired";
 import { UserParamDecorator } from "src/users/decorators/UserDecorator";
-import { UserChangeDto, UserModel, UserSelfDTO } from "src/users/models/User";
+import { UserChangeDTO, UserModel, UserSelfDTO } from "src/users/models/User";
+import { PortfolioController } from "src/portfolio/portfolio.controller";
 
 @Controller("spot")
 export class SpotPositionController{
   constructor(
-    private positionService: SpotPositionService
+    private positionService: SpotPositionService,
+    private portfolioController: PortfolioController,
   ){}
 
   @AuthRequired
   @ApiResponse({ type: [SpotPosition] })
-  @Get()
-  async getPositions(@UserParamDecorator() user: UserModel): Promise<SpotPosition[]> {
-    return this.positionService.getPositionsByUserId(user._id)
+  @Get(':portfolioId')
+  async getPositionsByPortfolioId(@UserParamDecorator() user: UserModel, @Param('portfolioId') portfolioId: string): Promise<SpotPosition[]> {
+    this.portfolioController.checkAuthority(portfolioId, user)
+    return this.positionService.getPositionsByPortfolioId(user._id)
   }
+
 
   @ApiNoContentResponse()
   @AuthRequired
   @Delete(':id')
   async delete(@UserParamDecorator() user: UserModel, @Param('id') id) {
-    const pos = await this.positionService.getPositionsById(id)
-    if(pos._id !== user._id){
-      throw new UnauthorizedException("it's not yours position")
-    }
+    this.checkAuthority(id, user)
     await this.positionService.deletePositionById(id)
   }
   
@@ -34,11 +35,29 @@ export class SpotPositionController{
   @AuthRequired
   @Patch(':id')
   async change(@UserParamDecorator() user: UserModel, @Body() toChange: changeSpotPositionDTO, @Param('id') id): Promise<SpotPosition> {
-    const pos = await this.positionService.getPositionsById(id)
-    if(pos._id !== user._id){
-      throw new UnauthorizedException("it's not yours position")
-    }
+    this.checkAuthority(id, user)
     return await this.positionService.change(id, toChange)
+  }
+
+  @ApiResponse({ type: SpotPosition  })
+  @AuthRequired
+  @Post()
+  async create(@UserParamDecorator() user: UserModel, @Body() pos: SpotPositionWithoutId, @Param('id') id): Promise<SpotPosition> {
+    this.portfolioController.checkAuthority(pos.portfolioId, user)
+    return await this.positionService.createPosition(pos)
+  }
+
+  @AuthRequired
+  @ApiResponse({ type: [SpotPosition] })
+  @Get(':id')
+  async getPositionById(@UserParamDecorator() user: UserModel, @Param('id') id: string): Promise<SpotPosition> {
+    this.checkAuthority(id, user)
+    return this.positionService.getPositionById(id)
+  }
+  
+  async checkAuthority(id: string, user: UserModel){
+    const pos = await this.positionService.getPositionById(id)
+    this.portfolioController.checkAuthority(pos.portfolioId, user)
   }
 
 }

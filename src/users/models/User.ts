@@ -79,8 +79,7 @@ export class UserCreateDTO extends PickType(
 
 }
 
-export class UserChangeDto extends PartialType(UserCreateDTO){}
-
+export class UserChangeDTO extends PartialType(UserCreateDTO){}
 export class UserAdminCreateDTO extends IntersectionType(
     UserCreateDTO,
     OmitType(User, ['hashedPassword', '_id'])

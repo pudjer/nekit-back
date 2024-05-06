@@ -8,6 +8,8 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { MongooseModule } from '@nestjs/mongoose';
 import { stripInterceptor } from './stripInterceptor';
 import { validationSchema } from '../config/variables';
+import { PortfolioModule } from 'src/portfolio/portfolio.module';
+import { PositionsModule } from 'src/positions/positions.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { validationSchema } from '../config/variables';
       useFactory: getMongoConfig
     }),
     UserModule,
+    PortfolioModule,
+    PositionsModule
   ],
   providers: [
     {

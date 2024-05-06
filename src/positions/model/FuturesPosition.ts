@@ -12,7 +12,7 @@ export class FuturesPosition{
   @ApiProperty({ type: String })
   @Prop({ required: true })
   @IsString()
-  userId: string;
+  portfolioId: string;
 
 
   @ApiProperty({ type: String })
@@ -65,7 +65,7 @@ export class FuturesPosition{
 }
 
 
-export class changeFuturesPositionDTO extends PartialType(OmitType(FuturesPosition, ['_id', 'userId'])){}
+export class changeFuturesPositionDTO extends PartialType(OmitType(FuturesPosition, ['_id', 'portfolioId'])){}
 export class FuturesPositionWithoutId extends OmitType(FuturesPosition, ['_id']){}
 export type FuturesPositionModel = HydratedDocument<FuturesPosition>
 export const FuturesPositionScheme = SchemaFactory.createForClass(FuturesPosition);

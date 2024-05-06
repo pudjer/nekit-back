@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FuturesPosition, changeFuturesPositionDTO } from './model/FuturesPosition';
+import { FuturesPosition, FuturesPositionWithoutId, changeFuturesPositionDTO } from './model/FuturesPosition';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -10,14 +10,14 @@ export class FuturesPositionService {
   ){}
 
 
-  async createPosition(position: FuturesPosition){
+  async createPosition(position: FuturesPositionWithoutId){
     return await this.positionModel.create(position)
   }
-  async getPositionsById(id: string){
+  async getPositionById(id: string){
     return await this.positionModel.findById(id)
   }
-  async getPositionsByUserId(userId: string){
-    return await this.positionModel.find({ userId })
+  async getPositionsByPortfolioId(portfolioId: string){
+    return await this.positionModel.find({ portfolioId })
   }
 
   async deletePositionById(id: string){

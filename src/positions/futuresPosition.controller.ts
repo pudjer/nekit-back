@@ -1,32 +1,32 @@
-import { Body, Controller, Delete, Get, Param, Patch, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, UnauthorizedException } from "@nestjs/common";
 import { FuturesPositionService } from "./futuresPosition.service";
-import { FuturesPosition, changeFuturesPositionDTO } from "./model/FuturesPosition";
+import { FuturesPosition, FuturesPositionWithoutId, changeFuturesPositionDTO } from "./model/FuturesPosition";
 import { ApiNoContentResponse, ApiResponse } from "@nestjs/swagger";
 import { AuthRequired } from "src/users/decorators/AuthRequired";
 import { UserParamDecorator } from "src/users/decorators/UserDecorator";
 import {  UserModel } from "src/users/models/User";
+import { PortfolioController } from "src/portfolio/portfolio.controller";
 
 @Controller("futures")
 export class FuturesPositionController{
   constructor(
-    private positionService: FuturesPositionService
+    private positionService: FuturesPositionService,
+    private portfolioController: PortfolioController,
   ){}
 
   @AuthRequired
   @ApiResponse({ type: [FuturesPosition] })
-  @Get()
-  async getPositions(@UserParamDecorator() user: UserModel): Promise<FuturesPosition[]> {
-    return this.positionService.getPositionsByUserId(user._id)
+  @Get(':portfolioId')
+  async getPositionsByPortfolioId(@UserParamDecorator() user: UserModel, @Param('portfolioId') portfolioId: string): Promise<FuturesPosition[]> {
+    this.portfolioController.checkAuthority(portfolioId, user)
+    return this.positionService.getPositionsByPortfolioId(portfolioId)
   }
 
   @ApiNoContentResponse()
   @AuthRequired
   @Delete(':id')
   async delete(@UserParamDecorator() user: UserModel, @Param('id') id) {
-    const pos = await this.positionService.getPositionsById(id)
-    if(pos._id !== user._id){
-      throw new UnauthorizedException("it's not yours position")
-    }
+    this.checkAuthority(id, user)
     await this.positionService.deletePositionById(id)
   }
   
@@ -34,11 +34,29 @@ export class FuturesPositionController{
   @AuthRequired
   @Patch(':id')
   async change(@UserParamDecorator() user: UserModel, @Body() toChange: changeFuturesPositionDTO, @Param('id') id): Promise<FuturesPosition> {
-    const pos = await this.positionService.getPositionsById(id)
-    if(pos._id !== user._id){
-      throw new UnauthorizedException("it's not yours position")
-    }
+    this.checkAuthority(id, user)
     return await this.positionService.change(id, toChange)
   }
+
+  @ApiResponse({ type: FuturesPosition  })
+  @AuthRequired
+  @Post()
+  async create(@UserParamDecorator() user: UserModel, @Body() pos: FuturesPositionWithoutId, @Param('id') id): Promise<FuturesPosition> {
+    this.portfolioController.checkAuthority(pos.portfolioId, user)
+    return await this.positionService.createPosition(pos)
+  }
+
+  @AuthRequired
+  @ApiResponse({ type: [FuturesPosition] })
+  @Get(':id')
+  async getPositionById(@UserParamDecorator() user: UserModel, @Param('id') id: string): Promise<FuturesPosition> {
+    this.checkAuthority(id, user)
+    return this.positionService.getPositionById(id)
+  }
+  async checkAuthority(id: string, user: UserModel){
+    const pos = await this.positionService.getPositionById(id)
+    this.portfolioController.checkAuthority(pos.portfolioId, user)
+  }
+
 
 }

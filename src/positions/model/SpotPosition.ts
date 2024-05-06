@@ -11,7 +11,7 @@ export class SpotPosition{
   @ApiProperty({ type: String })
   @Prop({ required: true })
   @IsString()
-  userId: string;
+  portfolioId: string;
 
   @ApiProperty({ type: String })
   _id: string
@@ -38,7 +38,7 @@ export class SpotPosition{
 
 }
 export class SpotPositionWithoutId extends OmitType(SpotPosition, ['_id']){}
-export class changeSpotPositionDTO extends PartialType(OmitType(SpotPosition, ['_id', 'userId'])){}
+export class changeSpotPositionDTO extends PartialType(OmitType(SpotPosition, ['_id', 'portfolioId'])){}
 
 export type SpotPositionModel = HydratedDocument<SpotPosition>
 export const SpotPositionScheme = SchemaFactory.createForClass(SpotPosition);

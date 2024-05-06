@@ -3,7 +3,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FuturesPosition, FuturesPositionScheme } from './model/FuturesPosition';
 import { SpotPosition, SpotPositionScheme } from './model/SpotPosition';
 import { FuturesPositionService } from './futuresPosition.service';
-import { SpotPositionService } from './spotPosition.service';
+import { FuturesPositionController } from './futuresPosition.controller';
+import { SpotPositionController } from './spotPosition.controller';
+import { SpotPositionService } from './SpotPosition.service';
+import { PortfolioModule } from 'src/portfolio/portfolio.module';
 
 @Module({
   imports:[
@@ -17,10 +20,9 @@ import { SpotPositionService } from './spotPosition.service';
         schema: SpotPositionScheme
       }
     ]),
+    PortfolioModule
   ],
-  providers: [FuturesPositionService, SpotPositionService]
+  providers: [ SpotPositionService, FuturesPositionService ],
+  controllers: [SpotPositionController, FuturesPositionController ]
 })
-export class PositionsModule {
-
-  
-}
+export class PositionsModule {}

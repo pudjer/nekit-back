@@ -29,9 +29,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const {iat, exp, ...userFromCookie} = cookie
         const user = await this.userService.validateAndGetUser(userFromCookie, {password: false})
         const valid_since = Math.floor(user.valid_since.getTime() / 1000)
-        if(user.valid_since && (valid_since > iat)){
-            throw new HttpException('Suspicious request detected.', HttpStatus.BAD_REQUEST);
+        if((exp < (new Date()).getTime() / 1000) || (user.valid_since && (valid_since > iat))){
+            throw new UnauthorizedException();
+            console.log('tokenn')
         }
         return user;
     }
 }
+
