@@ -42,7 +42,7 @@ export class SpotPositionController{
   @ApiResponse({ type: SpotPosition  })
   @AuthRequired
   @Post()
-  async create(@UserParamDecorator() user: UserModel, @Body() pos: SpotPositionWithoutId, @Param('id') id): Promise<SpotPosition> {
+  async create(@UserParamDecorator() user: UserModel, @Body() pos: SpotPositionWithoutId): Promise<SpotPosition> {
     this.portfolioController.checkAuthority(pos.portfolioId, user)
     return await this.positionService.createPosition(pos)
   }

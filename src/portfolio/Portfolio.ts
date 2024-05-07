@@ -18,16 +18,15 @@ export class Portfolio{
   _id: string
 
 
-  @ApiProperty({ type: String })
-  @Prop({ required: true })
-  @IsString()
-  currency: string
-
-
   @ApiProperty({ type: String, required: false })
-  @Prop({ required: true, default: '' })
+  @Prop({ default: '' })
   @IsString()
   description: string = ''
+
+  @ApiProperty({ type: String, required: true })
+  @Prop({ required: true })
+  @IsString()
+  name: string
 
 }
 

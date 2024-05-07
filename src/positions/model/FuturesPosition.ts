@@ -23,10 +23,6 @@ export class FuturesPosition{
   @IsString()
   symbol: string;
 
-  @ApiProperty({ type: String })
-  @Prop({ required: true })
-  @IsString()
-  currency: string;
 
   @ApiProperty({ type: Number })
   @Prop({ required: true })

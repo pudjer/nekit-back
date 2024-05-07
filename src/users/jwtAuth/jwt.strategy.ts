@@ -6,11 +6,8 @@ import {UserSelfDTO} from "../models/User";
 import {Request} from "express";
 import { UserService } from '../users.service';
 
-export const TOKEN_NAME = 'refresh_token'
-const cookieExtractor = (req: Request) =>{
-    if('cookies' in req){
-        return req.cookies[TOKEN_NAME]
-    }
+const authExtractor = (req: Request) =>{
+    return req.headers.authorization
 }
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,20 +15,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         configService: ConfigService,
         private readonly userService: UserService) {
         super({
-            jwtFromRequest: cookieExtractor,
+            jwtFromRequest: authExtractor,
             ignoreExpiration: true,
             secretOrKey: configService.get('SECRET_KEY'),
             global: true,
         });
     }
 
-    async validate(cookie: UserSelfDTO & {iat: number, exp: number}) {
-        const {iat, exp, ...userFromCookie} = cookie
+    async validate(auth: UserSelfDTO & {iat: number, exp: number}) {
+        const {iat, exp, ...userFromCookie} = auth
         const user = await this.userService.validateAndGetUser(userFromCookie, {password: false})
         const valid_since = Math.floor(user.valid_since.getTime() / 1000)
         if((exp < (new Date()).getTime() / 1000) || (user.valid_since && (valid_since > iat))){
             throw new UnauthorizedException();
-            console.log('tokenn')
         }
         return user;
     }

@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { privateAttributesWithoutPassword } from '../config/variables';
 import { striper } from '../helpers/stripper';
-import { Tokens } from './models/Tokens';
+import { AccessToken, Tokens } from './models/Tokens';
 
 
 @Injectable()
@@ -71,11 +71,10 @@ export class UserService {
         await user.save()
         return user
     }
-    async getTokens(user: User): Promise<Tokens> {
+    async getToken(user: User): Promise<AccessToken> {
         const userf = (await this.findByUsername(user.username)).toObject()
         const toCookie = striper(privateAttributesWithoutPassword)(userf)
         return {
-            refresh_token: this.jwtService.sign(toCookie, { expiresIn: this.refreshExpTime }),
             access_token: this.jwtService.sign(toCookie, { expiresIn: this.accessExpTime })
         }
     }

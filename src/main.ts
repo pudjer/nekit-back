@@ -8,7 +8,10 @@ import { UserAdminCreateDTO, UserCreateDTO } from './users/models/User';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
-  app.enableCors();
+  app.enableCors({
+    origin: 'http://localhost:5173',// Allow requests from these origins
+    credentials: true, // Allow credentials (e.g., cookies)
+  });
   const configService = app.get(ConfigService);
   const port = configService.get('PORT')
   const config = new DocumentBuilder().build();
