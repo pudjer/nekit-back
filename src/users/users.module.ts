@@ -8,6 +8,7 @@ import { UserController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserScheme } from './models/User';
 import { UserService } from './users.service';
+import { ExchangeModule } from 'src/exchange/exchange.module';
 @Module({
   imports: [
     PassportModule,
@@ -20,7 +21,8 @@ import { UserService } from './users.service';
     }),
     MongooseModule.forFeature([
       { name: User.name, schema: UserScheme },
-    ])
+    ]),
+    ExchangeModule
   ],
   providers: [LocalStrategy, JwtStrategy, UserService],
   controllers: [UserController],
