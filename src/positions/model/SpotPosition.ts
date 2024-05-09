@@ -36,6 +36,11 @@ export class SpotPosition{
   @IsNotEmpty()
   initialPrice: number;
 
+  
+  @ApiProperty({ type: Number })
+  @Prop({ required: false })
+  exitPrice: number;
+
 }
 export class SpotPositionWithoutId extends OmitType(SpotPosition, ['_id']){}
 export class changeSpotPositionDTO extends PartialType(OmitType(SpotPosition, ['_id', 'portfolioId'])){}

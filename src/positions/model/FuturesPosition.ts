@@ -51,13 +51,15 @@ export class FuturesPosition{
 
   @ApiProperty({ type: Number })
   @Prop({ required: false })
-  @IsNotEmpty()
   stopLoss: number;
 
   @ApiProperty({ type: Number })
   @Prop({ required: false })
-  @IsNotEmpty()
   takeProfit: number;
+
+  @ApiProperty({ type: Number })
+  @Prop({ required: false })
+  exitPrice: number;
 }
 
 
