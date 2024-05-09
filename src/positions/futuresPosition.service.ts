@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FuturesPosition, FuturesPositionWithoutId, changeFuturesPositionDTO } from './model/FuturesPosition';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -14,7 +14,9 @@ export class FuturesPositionService {
     return await this.positionModel.create(position)
   }
   async getPositionById(id: string){
-    return await this.positionModel.findById(id)
+    const res =  await this.positionModel.findById(id)
+    if(!res)throw new NotFoundException()
+    return res
   }
   async getPositionsByPortfolioId(portfolioId: string){
     return await this.positionModel.find({ portfolioId })
@@ -26,6 +28,7 @@ export class FuturesPositionService {
 
   async change(id: string, newPos: changeFuturesPositionDTO){
     const pos = await this.positionModel.findById(id)
+    if(!pos)throw new NotFoundException()
     Object.assign(pos, newPos)
     await pos.save()
     return pos

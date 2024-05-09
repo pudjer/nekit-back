@@ -29,7 +29,7 @@ export class SpotPosition{
   @ApiProperty({ type: Date })
   @Prop({ required: true, default: ()=> new Date() })
   @IsISO8601()
-  typestamp: Date;
+  timestamp: Date;
 
   @ApiProperty({ type: Number })
   @Prop({ required: true })

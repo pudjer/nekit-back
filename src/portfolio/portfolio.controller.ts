@@ -1,4 +1,4 @@
-import { Controller, Get, Delete, Param, UnauthorizedException, Patch, Body, Post } from "@nestjs/common"
+import { Controller, Get, Delete, Param, UnauthorizedException, Patch, Body, Post, NotFoundException } from "@nestjs/common"
 import { ApiResponse, ApiNoContentResponse } from "@nestjs/swagger"
 import { AuthRequired } from "src/users/decorators/AuthRequired"
 import { UserParamDecorator } from "src/users/decorators/UserDecorator"
@@ -24,7 +24,9 @@ export class PortfolioController{
   @ApiResponse({ type: [Portfolio] })
   @Get(':id')
   async getPortfolioById(@UserParamDecorator() user: UserModel, @Param('id') id): Promise<Portfolio> {
-    return this.portfolioService.getPortfolioById(id)
+    const res =  this.portfolioService.getPortfolioById(id)
+    if(!res)throw new NotFoundException()
+    return res
   }
 
   @ApiNoContentResponse()
@@ -53,7 +55,10 @@ export class PortfolioController{
   }
   async checkAuthority(id: string, user: UserModel){
     const pos = await this.portfolioService.getPortfolioById(id)
-    if(pos._id !== user._id){
+    if(!pos){
+      throw new NotFoundException()
+    }
+    if(pos.userId !== user._id.toString()){
       throw new UnauthorizedException("it's not yours portfolio")
     }
   }

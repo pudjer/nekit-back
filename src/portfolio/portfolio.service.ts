@@ -21,7 +21,7 @@ export class PortfolioService {
   }
 
   async deletePortfolioById(id: string){
-    return await this.portfolioModel.findByIdAndDelete({_id: id})
+    return await this.portfolioModel.findByIdAndDelete(id)
   }
 
   async change(id: string, newPortf: PortfolioChangeDTO){

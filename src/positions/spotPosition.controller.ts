@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Query, UnauthorizedException } from "@nestjs/common";
 import { SpotPositionService } from "./SpotPosition.service";
 import { SpotPosition, SpotPositionWithoutId, changeSpotPositionDTO } from "./model/SpotPosition";
 import { ApiNoContentResponse, ApiResponse } from "@nestjs/swagger";
@@ -16,10 +16,12 @@ export class SpotPositionController{
 
   @AuthRequired
   @ApiResponse({ type: [SpotPosition] })
-  @Get(':portfolioId')
-  async getPositionsByPortfolioId(@UserParamDecorator() user: UserModel, @Param('portfolioId') portfolioId: string): Promise<SpotPosition[]> {
+  @Get('all')
+  async getPositionsByPortfolioId(@UserParamDecorator() user: UserModel, @Query('portfolioId') portfolioId: string): Promise<SpotPosition[]> {
+    if(!portfolioId) throw new BadRequestException('specify profileId')
     this.portfolioController.checkAuthority(portfolioId, user)
-    return this.positionService.getPositionsByPortfolioId(user._id)
+    
+    return await this.positionService.getPositionsByPortfolioId(portfolioId)
   }
 
 
@@ -57,6 +59,9 @@ export class SpotPositionController{
   
   async checkAuthority(id: string, user: UserModel){
     const pos = await this.positionService.getPositionById(id)
+    if(!pos){
+      throw new NotFoundException()
+    }
     this.portfolioController.checkAuthority(pos.portfolioId, user)
   }
 

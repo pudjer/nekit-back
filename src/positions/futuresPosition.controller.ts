@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, Param, Patch, Post, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Query, UnauthorizedException } from "@nestjs/common";
 import { FuturesPositionService } from "./futuresPosition.service";
 import { FuturesPosition, FuturesPositionWithoutId, changeFuturesPositionDTO } from "./model/FuturesPosition";
 import { ApiNoContentResponse, ApiResponse } from "@nestjs/swagger";
@@ -16,8 +16,10 @@ export class FuturesPositionController{
 
   @AuthRequired
   @ApiResponse({ type: [FuturesPosition] })
-  @Get(':portfolioId')
-  async getPositionsByPortfolioId(@UserParamDecorator() user: UserModel, @Param('portfolioId') portfolioId: string): Promise<FuturesPosition[]> {
+  @Get('all')
+  async getPositionsByPortfolioId(@UserParamDecorator() user: UserModel, @Query('portfolioId') portfolioId: string): Promise<FuturesPosition[]> {
+    if(!portfolioId) throw new BadRequestException('specify profileId')
+
     this.portfolioController.checkAuthority(portfolioId, user)
     return this.positionService.getPositionsByPortfolioId(portfolioId)
   }
@@ -55,6 +57,9 @@ export class FuturesPositionController{
   }
   async checkAuthority(id: string, user: UserModel){
     const pos = await this.positionService.getPositionById(id)
+    if(!pos){
+      throw new NotFoundException()
+    }
     this.portfolioController.checkAuthority(pos.portfolioId, user)
   }
 

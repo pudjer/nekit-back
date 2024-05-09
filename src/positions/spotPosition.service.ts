@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { SpotPosition, SpotPositionWithoutId, changeSpotPositionDTO } from './model/SpotPosition';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -14,16 +14,21 @@ export class SpotPositionService {
   }
 
   async getPositionsByPortfolioId(portfolioId: string){
-    return await this.positionModel.find({ portfolioId: portfolioId })
+    const res = await this.positionModel.find({ portfolioId: portfolioId })
+    return res
   }
+
   async getPositionById(id: string){
-    return await this.positionModel.findById(id)
+    const res =  await this.positionModel.findById(id)
+    if(!res)throw new NotFoundException()
+    return res
   }
   async deletePositionById(id: string){
     return await this.positionModel.findByIdAndDelete({_id: id})
   }
   async change(id: string, newPos: changeSpotPositionDTO){
     const pos = await this.positionModel.findById(id)
+    if(!pos)throw new NotFoundException()
     Object.assign(pos, newPos)
     await pos.save()
     return pos
