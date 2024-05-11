@@ -71,15 +71,23 @@ const currencies = {
 }
 
 
-
+type Glob = {
+  "eth_dominance": 15.54915795644,
+  "btc_dominance": 53.204077126219,
+  "total_market_cap": 2251885193123.512,
+  "total_volume_24h": 67644895476.9,
+}
 @Controller('exchange')
 export class ExchangeController {
   constructor(){
     this.setRates()
     this.setTokens()
+    this.setGlobal()
+
   }
   availableTokens: Token[] = []
   exchangeRates: Currency[] = []
+  global: Glob
   @Get('currencies')
   @ApiResponseProperty({type: [Currency]})
   async getAvailableCurrencies(): Promise<Currency[]> {
@@ -112,5 +120,21 @@ export class ExchangeController {
   @Cron(CronExpression.EVERY_10_MINUTES)
   async setTokens(){
     this.availableTokens = (await (axios.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"))).data;
+  }
+
+  @Cron(CronExpression.EVERY_10_MINUTES)
+  async setGlobal(){
+    const res = (await axios.get("https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest?CMC_PRO_API_KEY=d1783754-3852-4484-8452-d5efef86a644")).data.data;
+    const global: Glob = {} as Glob
+    global.eth_dominance = res.eth_dominance
+    global.btc_dominance = res.btc_dominance
+    global.total_market_cap = res.quote.USD.total_market_cap
+    global.total_volume_24h = res.quote.USD.total_volume_24h
+    this.global = global
+  }
+  @Get("global")
+  async getGlobal(){
+    //d1783754-3852-4484-8452-d5efef86a644
+    return this.global
   }
 }

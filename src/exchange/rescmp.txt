@@ -1,0 +1,61 @@
+{
+    "status": {
+        "timestamp": "2024-05-11T03:17:51.955Z",
+        "error_code": 0,
+        "error_message": null,
+        "elapsed": 24,
+        "credit_count": 1,
+        "notice": null
+    },
+    "data": {
+        "active_cryptocurrencies": 9941,
+        "total_cryptocurrencies": 29658,
+        "active_market_pairs": 81784,
+        "active_exchanges": 763,
+        "total_exchanges": 8493,
+        "eth_dominance": 15.54915795644,
+        "btc_dominance": 53.204077126219,
+        "eth_dominance_yesterday": 15.65335009,
+        "btc_dominance_yesterday": 53.30114506,
+        "eth_dominance_24h_percentage_change": -0.10419213356,
+        "btc_dominance_24h_percentage_change": -0.097067933781,
+        "defi_volume_24h": 6066833850.002723,
+        "defi_volume_24h_reported": 47867838530.01123,
+        "defi_market_cap": 84241804082.80867,
+        "defi_24h_percentage_change": -2.776818626928,
+        "stablecoin_volume_24h": 62241682047.56519,
+        "stablecoin_volume_24h_reported": 366023051608.525,
+        "stablecoin_market_cap": 155298286656.75055,
+        "stablecoin_24h_percentage_change": 4.929407093066,
+        "derivatives_volume_24h": 665380909293.4662,
+        "derivatives_volume_24h_reported": 666712215661.719,
+        "derivatives_24h_percentage_change": 6.957382286,
+        "quote": {
+            "USD": {
+                "total_market_cap": 2251885193123.512,
+                "total_volume_24h": 67644895476.9,
+                "total_volume_24h_reported": 379890851387.44,
+                "altcoin_volume_24h": 40336723699.09931,
+                "altcoin_volume_24h_reported": 213245792208.81116,
+                "altcoin_market_cap": 1053790458180.1747,
+                "defi_volume_24h": 6066833850.002723,
+                "defi_volume_24h_reported": 47867838530.01123,
+                "defi_24h_percentage_change": -2.776818626928,
+                "defi_market_cap": 84241804082.80867,
+                "stablecoin_volume_24h": 62241682047.56519,
+                "stablecoin_volume_24h_reported": 366023051608.525,
+                "stablecoin_24h_percentage_change": 4.929407093066,
+                "stablecoin_market_cap": 155298286656.75055,
+                "derivatives_volume_24h": 665380909293.4662,
+                "derivatives_volume_24h_reported": 666712215661.719,
+                "derivatives_24h_percentage_change": 6.957382286,
+                "total_market_cap_yesterday": 2321816480883.1265,
+                "total_volume_24h_yesterday": 64299759295.57,
+                "total_market_cap_yesterday_percentage_change": -3.0119214130573795,
+                "total_volume_24h_yesterday_percentage_change": 5.202408559499034,
+                "last_updated": "2024-05-11T03:15:59.999Z"
+            }
+        },
+        "last_updated": "2024-05-11T03:15:59.999Z"
+    }
+}
