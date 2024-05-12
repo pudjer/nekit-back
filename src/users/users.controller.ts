@@ -71,7 +71,14 @@ export class UserController {
     return await user.save()
   }
 
-
+  
+  @ApiResponse({ type: UserSelfDTO })
+  @AuthRequired
+  @Patch("invalidate")
+  async addTg(@UserParamDecorator() user: UserModel) {
+    user.valid_since = new Date()
+    return await user.save()
+  }
 
   
 }
