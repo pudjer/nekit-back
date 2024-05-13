@@ -5,11 +5,15 @@ import { UserParamDecorator } from "src/users/decorators/UserDecorator"
 import { UserModel } from "src/users/models/User"
 import { Portfolio, PortfolioChangeDTO, PortfolioCreateDTO } from "./Portfolio"
 import { PortfolioService } from "./portfolio.service"
-
+import { TelegramService } from "src/users/telegram.service"
+class Report{
+  report: string
+}
 @Controller("portfolios")
 export class PortfolioController{
   constructor(
-    private portfolioService: PortfolioService
+    private portfolioService: PortfolioService,
+    private telegram: TelegramService
   ){}
 
   @AuthRequired
@@ -63,4 +67,11 @@ export class PortfolioController{
     }
   }
 
+  @AuthRequired
+  @Post("tgreport")
+  async toTg(@UserParamDecorator() user: UserModel, @Body() portfolio: Report){
+    user.tgId && this.telegram.bot.telegram.sendMessage(user.tgId, portfolio.report)
+  }
+
 }
+

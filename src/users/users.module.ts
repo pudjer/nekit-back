@@ -8,7 +8,8 @@ import { UserController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserScheme } from './models/User';
 import { UserService } from './users.service';
-import { ExchangeModule } from 'src/exchange/exchange.module';
+import { TelegrafModule } from 'nestjs-telegraf';
+import { TelegramService } from 'src/users/telegram.service';
 @Module({
   imports: [
     PassportModule,
@@ -22,9 +23,16 @@ import { ExchangeModule } from 'src/exchange/exchange.module';
     MongooseModule.forFeature([
       { name: User.name, schema: UserScheme },
     ]),
-    ExchangeModule
+    TelegrafModule.forRootAsync({
+      useFactory: async (configService: ConfigService)=>({
+        token: await configService.get('TELEGRAM_TOKEN'),
+      }),
+      inject: [ConfigService],
+    }),
+
   ],
-  providers: [LocalStrategy, JwtStrategy, UserService],
+  providers: [LocalStrategy, JwtStrategy, UserService, TelegramService],
   controllers: [UserController],
+  exports: [UserService, TelegramService]
 })
 export class UserModule {}

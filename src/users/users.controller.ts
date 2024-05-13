@@ -1,18 +1,24 @@
-import { Body, Controller, Delete, Get, Patch, Post, Response, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Patch, Post, Response, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './local/local-auth.guard';
 import { UserParamDecorator } from './decorators/UserDecorator';
 import { User, UserAdminCreateDTO, UserChangeDTO, UserCreateDTO, UserLoginDTO, UserModel, UserSelfDTO } from './models/User';
-import { AccessToken } from './models/Tokens';
+import { AccessToken, TgPassword } from './models/Tokens';
 import { ApiBody, ApiNoContentResponse, ApiResponse } from '@nestjs/swagger';
 import { AuthRequired } from './decorators/AuthRequired';
 import { UserService } from './users.service';
 import { AdminRequired } from './admin/AdminDecorator';
+import { TelegramService } from 'src/users/telegram.service';
 
+
+function generateRandomNumber() {
+  return Math.floor(10000000 + Math.random() * 90000000);
+}
 
 @Controller('user')
 export class UserController {
   constructor(
     private userService: UserService,
+    private telegram: TelegramService
     ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -22,9 +28,36 @@ export class UserController {
   async login(
     @UserParamDecorator() user: UserModel,
     ): Promise<AccessToken>{
+    if(user.tgId){
+      user.tgPassword = generateRandomNumber()
+      await user.save()
+      this.telegram.bot.telegram.sendMessage(user.tgId, `
+Команда CoinTrackX рада приветствовать Вас 🎉
+
+Для входа используйте одноразовый пароль:
+\n`+user.tgPassword.toString())
+      return {
+        access_token: "",
+        tgrequired: true
+      }
+    }
     return await this.userService.getToken(user);
   }
 
+  @Post('tgauth')
+  @ApiBody({ type: UserLoginDTO })
+  async loginByTgToken(
+    @Body() tgPassword: TgPassword
+  ){
+    const user = await this.userService.findByUsername(tgPassword.username)
+    if(tgPassword.tgPassword===user.tgPassword){
+      delete user.tgPassword
+      await user.save()
+      return await this.userService.getToken(user);
+    }else{
+      throw new BadRequestException()
+    }
+  }
 
   @ApiResponse({type: UserSelfDTO})
   @Post()
@@ -67,15 +100,6 @@ export class UserController {
   @AuthRequired
   @Patch("invalidate")
   async invalidateByTime(@UserParamDecorator() user: UserModel) {
-    user.valid_since = new Date()
-    return await user.save()
-  }
-
-  
-  @ApiResponse({ type: UserSelfDTO })
-  @AuthRequired
-  @Patch("invalidate")
-  async addTg(@UserParamDecorator() user: UserModel) {
     user.valid_since = new Date()
     return await user.save()
   }

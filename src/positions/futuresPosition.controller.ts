@@ -6,13 +6,16 @@ import { AuthRequired } from "src/users/decorators/AuthRequired";
 import { UserParamDecorator } from "src/users/decorators/UserDecorator";
 import {  UserModel } from "src/users/models/User";
 import { PortfolioController } from "src/portfolio/portfolio.controller";
+import { Cron, CronExpression } from "@nestjs/schedule";
 
 @Controller("futures")
 export class FuturesPositionController{
   constructor(
     private positionService: FuturesPositionService,
     private portfolioController: PortfolioController,
-  ){}
+  ){
+    setTimeout(this.notifyUsers.bind(this), 10000)
+  }
 
   @AuthRequired
   @ApiResponse({ type: [FuturesPosition] })
@@ -61,6 +64,12 @@ export class FuturesPositionController{
       throw new NotFoundException()
     }
     this.portfolioController.checkAuthority(pos.portfolioId, user)
+  }
+
+
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  async notifyUsers(){
+    this.positionService.notifyClosingPositions()
   }
 
 

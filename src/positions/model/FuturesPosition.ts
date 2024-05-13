@@ -23,6 +23,9 @@ export class FuturesPosition{
   @IsString()
   symbol: string;
 
+  @ApiProperty({ type: String })
+  @Prop({ required: false })
+  currency: string;
 
   @ApiProperty({ type: Number })
   @Prop({ required: true })
@@ -60,6 +63,12 @@ export class FuturesPosition{
   @ApiProperty({ type: Number })
   @Prop({ required: false })
   exitPrice: number;
+
+
+  @Prop({ required: false })
+  notified?: boolean;
+
+
 }
 
 

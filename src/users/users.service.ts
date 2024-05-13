@@ -23,7 +23,9 @@ export class UserService {
         this.refreshExpTime = this.configService.get('JWT_REFRESH_EXPIRATION_TIME')
         this.accessExpTime = this.configService.get('JWT_ACCESS_EXPIRATION_TIME')
     }
-
+    async getUserById(id: string){
+        return await this.userModel.findById(id)
+    }
     async findByUsername(username: string){
         const res = await this.userModel.findOne({ username }).exec();
         if (!res) throw new UnauthorizedException()
@@ -77,6 +79,11 @@ export class UserService {
         return {
             access_token: this.jwtService.sign(toCookie, { expiresIn: this.accessExpTime })
         }
+    }
+    async addTg(userId: string, tgId: number){
+        const user = await this.userModel.findById(userId)
+        user.tgId = tgId
+        user.save()
     }
 
 }

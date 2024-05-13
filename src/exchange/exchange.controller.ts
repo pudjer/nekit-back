@@ -80,18 +80,20 @@ type Glob = {
 @Controller('exchange')
 export class ExchangeController {
   constructor(){
-    this.setRates()
+    this.setCurrencies()
     this.setTokens()
     this.setGlobal()
 
   }
   availableTokens: Token[] = []
-  exchangeRates: Currency[] = []
+  currencies: Currency[] = []
+  currenciesMap = new Map<string, Currency>()
+  tokensMap = new Map<string, Token>()
   global: Glob
   @Get('currencies')
   @ApiResponseProperty({type: [Currency]})
   async getAvailableCurrencies(): Promise<Currency[]> {
-    return this.exchangeRates
+    return this.currencies
   }
 
   @Get('tokens')
@@ -101,27 +103,42 @@ export class ExchangeController {
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async setRates() {
+  async setCurrencies() {
     const response = await axios.get('https://v6.exchangerate-api.com/v6/82ccc802c3969e6d757f5519/latest/USD')
     const data = response.data.conversion_rates;
     const exchangeRates = []
+    const map = new Map<string, Currency>()
     for(const name in currencies){
       if(name in data){
         const cur = new Currency()
         cur.name = currencies[name]
         cur.symbol = name
         cur.exchangeRateToUsd = data[name]
+        map.set(cur.name, cur)
         exchangeRates.push(cur)
       }
     }
-    this.exchangeRates = exchangeRates
+    this.currenciesMap = map
+    this.currencies = exchangeRates
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   async setTokens(){
-    this.availableTokens = (await (axios.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"))).data;
+    const tokens = (await (axios.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd"))).data;
+    this.availableTokens = tokens
+    for(const token of tokens){
+      this.tokensMap.set(token.symbol, token)
+    }
   }
-
+  convertFromUSD(price: number, currency: string | undefined): [number, string] {
+    if(!currency)return [price, "USD"]
+    const converted = this.currencies.find((e)=>currency===e.symbol)?.exchangeRateToUsd * price
+    if(converted){
+      return [converted, currency]
+    }else{
+      return [price, "USD"]
+    }
+  }
   @Cron(CronExpression.EVERY_10_MINUTES)
   async setGlobal(){
     const res = (await axios.get("https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest?CMC_PRO_API_KEY=d1783754-3852-4484-8452-d5efef86a644")).data.data;
@@ -137,4 +154,6 @@ export class ExchangeController {
     //d1783754-3852-4484-8452-d5efef86a644
     return this.global
   }
+
+
 }

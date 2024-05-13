@@ -52,6 +52,13 @@ export class User{
     @Prop({ type: () => Date, default: () => new Date(0) })
     valid_since: Date
 
+    @ApiPropertyOptional({ type: Number })
+    @Prop({ type: () => Number, unique: true, required: false, sparse: true})
+    @IsOptional()
+    tgId?: number
+
+    @Prop({ type: () => Number, required: false })
+    tgPassword?: number
 
 }
 

@@ -7,6 +7,8 @@ import { FuturesPositionController } from './futuresPosition.controller';
 import { SpotPositionController } from './spotPosition.controller';
 import { SpotPositionService } from './SpotPosition.service';
 import { PortfolioModule } from 'src/portfolio/portfolio.module';
+import { ExchangeModule } from 'src/exchange/exchange.module';
+import { UserModule } from 'src/users/users.module';
 
 @Module({
   imports:[
@@ -20,7 +22,9 @@ import { PortfolioModule } from 'src/portfolio/portfolio.module';
         schema: SpotPositionScheme
       }
     ]),
-    PortfolioModule
+    PortfolioModule,
+    ExchangeModule,
+    UserModule
   ],
   providers: [ SpotPositionService, FuturesPositionService ],
   controllers: [SpotPositionController, FuturesPositionController ]

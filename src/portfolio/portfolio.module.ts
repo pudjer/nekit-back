@@ -3,6 +3,8 @@ import { Portfolio, PortfolioScheme } from "./Portfolio";
 import { Module } from "@nestjs/common";
 import { PortfolioService } from "./portfolio.service";
 import { PortfolioController } from "./portfolio.controller";
+import { ExchangeModule } from "src/exchange/exchange.module";
+import { UserModule } from "src/users/users.module";
 
 @Module({
   imports:[
@@ -12,10 +14,12 @@ import { PortfolioController } from "./portfolio.controller";
         schema: PortfolioScheme
       }
     ]),
+    ExchangeModule,
+    UserModule
   ],
   providers: [PortfolioService, PortfolioController],
   controllers: [PortfolioController],
-  exports: [ PortfolioController]
+  exports: [ PortfolioController, PortfolioService]
 })
 export class PortfolioModule {
 

@@ -10,6 +10,8 @@ import { stripInterceptor } from './stripInterceptor';
 import { validationSchema } from '../config/variables';
 import { PortfolioModule } from 'src/portfolio/portfolio.module';
 import { PositionsModule } from 'src/positions/positions.module';
+import { ExchangeModule } from 'src/exchange/exchange.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -25,9 +27,11 @@ import { PositionsModule } from 'src/positions/positions.module';
       inject: [ConfigService],
       useFactory: getMongoConfig
     }),
+    ScheduleModule.forRoot(),
     UserModule,
     PortfolioModule,
-    PositionsModule
+    PositionsModule,
+    ExchangeModule
   ],
   providers: [
     {
