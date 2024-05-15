@@ -95,6 +95,7 @@ export class FuturesPositionService {
       try{
         const portfolio  = await this.portfolioService.getPortfolioById(posCanceled.pos.portfolioId)
         const userTgId = portfolio && (await this.userService.getUserById(portfolio.userId)).tgId
+        if(!userTgId)continue
         const notions = userTgId && userMap.get(userTgId)
         const [currentPrice, cur] = this.exchange.convertFromUSD(posCanceled.currentPrice, posCanceled.pos.currency)
         const [exitPrice, currency] = posCanceled.what !== "Ликвидация"  ? this.exchange.convertFromUSD(posCanceled.what==="Take Profit" ? posCanceled.pos.takeProfit : posCanceled.pos.stopLoss, posCanceled.pos.currency) : [undefined, undefined]
