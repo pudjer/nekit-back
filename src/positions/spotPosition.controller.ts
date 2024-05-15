@@ -14,13 +14,10 @@ export class SpotPositionController{
     private portfolioController: PortfolioController,
   ){}
 
-  @AuthRequired
   @ApiResponse({ type: [SpotPosition] })
   @Get('all')
-  async getPositionsByPortfolioId(@UserParamDecorator() user: UserModel, @Query('portfolioId') portfolioId: string): Promise<SpotPosition[]> {
+  async getPositionsByPortfolioId(@Query('portfolioId') portfolioId: string): Promise<SpotPosition[]> {
     if(!portfolioId) throw new BadRequestException('specify profileId')
-    this.portfolioController.checkAuthority(portfolioId, user)
-    
     return await this.positionService.getPositionsByPortfolioId(portfolioId)
   }
 
@@ -49,11 +46,9 @@ export class SpotPositionController{
     return await this.positionService.createPosition(pos)
   }
 
-  @AuthRequired
   @ApiResponse({ type: [SpotPosition] })
   @Get(':id')
-  async getPositionById(@UserParamDecorator() user: UserModel, @Param('id') id: string): Promise<SpotPosition> {
-    this.checkAuthority(id, user)
+  async getPositionById(@Param('id') id: string): Promise<SpotPosition> {
     return this.positionService.getPositionById(id)
   }
   

@@ -9,7 +9,7 @@ import { HydratedDocument } from "mongoose";
 export class Portfolio{
 
   @ApiProperty({ type: String })
-  @Prop({ required: true })
+  @Prop({ type:  ()=>String, required: true })
   @IsString()
   userId: string
 
@@ -24,14 +24,24 @@ export class Portfolio{
   description: string = ''
 
   @ApiProperty({ type: String, required: true })
-  @Prop({ required: true })
+  @Prop({ type: ()=>String, required: true })
   @IsString()
   name: string
 
+
+  @ApiProperty({ type: ()=>String, required: false, default: false })
+  @Prop({ type: String, required: false })
+  public?: boolean
+  
+  @ApiProperty({ type:  ()=>Number, required: false, default: 0 })
+  @Prop({ type: Number, required: false })
+  likes: number
+
+
 }
 
-export class PortfolioCreateDTO extends OmitType(Portfolio, ['_id']){}
-export class PortfolioChangeDTO extends OmitType(Portfolio, ['_id', 'userId']){}
+export class PortfolioCreateDTO extends OmitType(Portfolio, ['_id', "likes"]){}
+export class PortfolioChangeDTO extends OmitType(Portfolio, ['_id', 'userId', "likes"]){}
 
 export type PortfolioModel = HydratedDocument<Portfolio>
 export const PortfolioScheme = SchemaFactory.createForClass(Portfolio);

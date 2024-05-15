@@ -60,6 +60,11 @@ export class User{
     @Prop({ type: () => Number, required: false })
     tgPassword?: number
 
+
+    @ApiProperty({ type: [String], required: false })
+    @Prop({ type: () => [String], default: []})
+    favoritePortfolios: string[]
+
 }
 
 export class UserSelfDTO extends OmitType(
@@ -101,6 +106,7 @@ export class UserHashedDTO extends IntersectionType(
     PickType(User, ['hashedPassword']),
     OmitType(UserCreateDTO, ['password'])
     ) {}
+
 
 export type UserModel = HydratedDocument<User>
 export const UserScheme = SchemaFactory.createForClass(User);

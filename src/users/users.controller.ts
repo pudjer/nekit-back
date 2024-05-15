@@ -1,7 +1,8 @@
-import { BadRequestException, Body, Controller, Delete, Get, Patch, Post, Response, UseGuards } from '@nestjs/common';
+
+import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Response, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './local/local-auth.guard';
 import { UserParamDecorator } from './decorators/UserDecorator';
-import { User, UserAdminCreateDTO, UserChangeDTO, UserCreateDTO, UserLoginDTO, UserModel, UserSelfDTO } from './models/User';
+import {  User, UserAdminCreateDTO, UserChangeDTO, UserCreateDTO, UserLoginDTO, UserModel, UserSelfDTO } from './models/User';
 import { AccessToken, TgPassword } from './models/Tokens';
 import { ApiBody, ApiNoContentResponse, ApiResponse } from '@nestjs/swagger';
 import { AuthRequired } from './decorators/AuthRequired';
@@ -30,6 +31,10 @@ export class UserController {
     ): Promise<AccessToken>{
     if(user.tgId){
       user.tgPassword = generateRandomNumber()
+      setTimeout(()=>{
+        delete user.tgPassword
+        user.save()
+      }, 2*60*1000)
       await user.save()
       this.telegram.bot.telegram.sendMessage(user.tgId, `
 Команда CoinTrackX рада приветствовать Вас 🎉
@@ -44,18 +49,39 @@ export class UserController {
     return await this.userService.getToken(user);
   }
 
+  @AuthRequired
+  @Post("favorite/:id")
+  async addFavoritePortfolio(@UserParamDecorator() user: UserModel, @Param('id') id: string){
+    console.log(user.favoritePortfolios)
+    if(!user.favoritePortfolios.includes(id)){
+      user.favoritePortfolios = [...user.favoritePortfolios, id]
+      console.log(id)
+      await user.save()
+    }
+  }
+
+  
+  @AuthRequired
+  @Delete("favorite/:id")
+  async deleteFavoritePortfolio(@UserParamDecorator() user: UserModel, @Param('id') id: string){
+    user.favoritePortfolios = user.favoritePortfolios.filter(e=>e!==id)
+    console.log(id)
+    await user.save()
+  }
+
   @Post('tgauth')
+  @UseGuards(LocalAuthGuard)
   @ApiBody({ type: UserLoginDTO })
   async loginByTgToken(
-    @Body() tgPassword: TgPassword
+    @Body() tgPassword: TgPassword,
+    @UserParamDecorator() user: UserModel
   ){
-    const user = await this.userService.findByUsername(tgPassword.username)
     if(tgPassword.tgPassword===user.tgPassword){
       delete user.tgPassword
       await user.save()
       return await this.userService.getToken(user);
     }else{
-      throw new BadRequestException()
+      throw new BadRequestException("не совпал одноразовый пароль")
     }
   }
 

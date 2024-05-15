@@ -54,31 +54,39 @@ export class FuturesPositionService {
     for(const pos of poses){
       const currentPrice = this.exchange.tokensMap.get(pos.symbol).current_price || NaN
       let notifiedNow = false
+      let priceNow
       if(pos.quantity>0){
         if((pos.takeProfit || NaN) < currentPrice){
           if(!pos.notified)toNotify.push({pos, what: "Take Profit", currentPrice})
           notifiedNow = true
+          priceNow = pos.takeProfit
         }
         if((pos.stopLoss || NaN) > currentPrice){
           if(!pos.notified)toNotify.push({pos, what: "Stop Loss", currentPrice})
           notifiedNow = true
+          priceNow = pos.stopLoss
         }
       }else{
         if((pos.takeProfit || NaN) > currentPrice){
           if(!pos.notified)toNotify.push({pos, what: "Take Profit", currentPrice})
           notifiedNow = true
+          priceNow = pos.takeProfit
+
         }
         if((pos.stopLoss || NaN) < currentPrice){
           if(!pos.notified)toNotify.push({pos, what: "Stop Loss", currentPrice})
           notifiedNow = true
+          priceNow = pos.stopLoss
         }
       }
       if(pos.margin + (currentPrice * pos.quantity - pos.initialPrice * pos.quantity) < 0){
         if(!pos.notified)toNotify.push({pos, what: "Ликвидация", currentPrice})
         notifiedNow = true
+        priceNow = pos.initialPrice - (pos.margin / pos.quantity)
       }
       if(pos.notified!==notifiedNow){
         pos.notified = notifiedNow
+        pos.exitPrice = priceNow
         pos.save()
       }
     }

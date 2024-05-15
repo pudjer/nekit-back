@@ -23,7 +23,9 @@ export class PortfolioService {
   async deletePortfolioById(id: string){
     return await this.portfolioModel.findByIdAndDelete(id)
   }
-
+  async getPublicPortfolios(){
+    return await this.portfolioModel.find({public: true})
+  }
   async change(id: string, newPortf: PortfolioChangeDTO){
     const portf = await this.portfolioModel.findById(id)
     Object.assign(portf, newPortf)

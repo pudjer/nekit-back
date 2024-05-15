@@ -24,10 +24,19 @@ export class PortfolioController{
   }
 
   
+
+
+
+  @Get('public')
+  async getPublicPorfolios(): Promise<Portfolio[]> {
+    const res = await this.portfolioService.getPublicPortfolios()
+    return res
+  }
   @AuthRequired
   @ApiResponse({ type: [Portfolio] })
   @Get(':id')
   async getPortfolioById(@UserParamDecorator() user: UserModel, @Param('id') id): Promise<Portfolio> {
+    await this.checkAuthority(id, user)
     const res =  this.portfolioService.getPortfolioById(id)
     if(!res)throw new NotFoundException()
     return res
@@ -58,11 +67,11 @@ export class PortfolioController{
     return await this.portfolioService.createPortfolio(portf)
   }
   async checkAuthority(id: string, user: UserModel){
-    const pos = await this.portfolioService.getPortfolioById(id)
-    if(!pos){
+    const portf = await this.portfolioService.getPortfolioById(id)
+    if(!portf){
       throw new NotFoundException()
     }
-    if(pos.userId !== user._id.toString()){
+    if(!(portf.userId === user._id.toString() || portf.public)){
       throw new UnauthorizedException("it's not yours portfolio")
     }
   }

@@ -2,7 +2,7 @@ import * as Joi from 'joi';
 
 
 export const privateAttributes = ['password', 'hashedPassword', 'blocked', 'valid_since'] as const
-export const [password,  ...privateAttributesWithoutPassword] = privateAttributes
+export const [password, ...privateAttributesWithoutPassword] = privateAttributes
 export const validationSchema = Joi.object({
     NODE_ENV: Joi.string()
         .valid('development', 'production', 'test', 'provision')
@@ -13,7 +13,7 @@ export const validationSchema = Joi.object({
     JWT_REFRESH_EXPIRATION_TIME: [Joi.number(), Joi.string().regex(/^\d+( days|d|h| hrs|m|s|y)?$/)],
     MONGO_USERNAME: Joi.string(),
     MONGO_PASSWORD: Joi.string(),
-    MONDO_PORT: Joi.number(),
+    MONGO_PORT: Joi.number(),
     SMTP_HOST: Joi.string(),
     SMTP_PORT: Joi.number(),
     SMTP_USER: Joi.string(),

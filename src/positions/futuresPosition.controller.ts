@@ -17,13 +17,10 @@ export class FuturesPositionController{
     setTimeout(this.notifyUsers.bind(this), 10000)
   }
 
-  @AuthRequired
   @ApiResponse({ type: [FuturesPosition] })
   @Get('all')
-  async getPositionsByPortfolioId(@UserParamDecorator() user: UserModel, @Query('portfolioId') portfolioId: string): Promise<FuturesPosition[]> {
+  async getPositionsByPortfolioId(@Query('portfolioId') portfolioId: string): Promise<FuturesPosition[]> {
     if(!portfolioId) throw new BadRequestException('specify profileId')
-
-    this.portfolioController.checkAuthority(portfolioId, user)
     return this.positionService.getPositionsByPortfolioId(portfolioId)
   }
 
@@ -51,11 +48,9 @@ export class FuturesPositionController{
     return await this.positionService.createPosition(pos)
   }
 
-  @AuthRequired
   @ApiResponse({ type: [FuturesPosition] })
   @Get(':id')
-  async getPositionById(@UserParamDecorator() user: UserModel, @Param('id') id: string): Promise<FuturesPosition> {
-    this.checkAuthority(id, user)
+  async getPositionById(@Param('id') id: string): Promise<FuturesPosition> {
     return this.positionService.getPositionById(id)
   }
   async checkAuthority(id: string, user: UserModel){
