@@ -32,11 +32,9 @@ export class PortfolioController{
     const res = await this.portfolioService.getPublicPortfolios()
     return res
   }
-  @AuthRequired
   @ApiResponse({ type: [Portfolio] })
   @Get(':id')
-  async getPortfolioById(@UserParamDecorator() user: UserModel, @Param('id') id): Promise<Portfolio> {
-    await this.checkAuthority(id, user)
+  async getPortfolioById( @Param('id') id): Promise<Portfolio> {
     const res =  this.portfolioService.getPortfolioById(id)
     if(!res)throw new NotFoundException()
     return res
