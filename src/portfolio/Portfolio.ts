@@ -31,7 +31,7 @@ export class Portfolio{
 
   @ApiProperty({ type: ()=>String, required: false, default: false })
   @Prop({ type: String, required: false })
-  public?: boolean
+  isPublic?: boolean
   
   @ApiProperty({ type:  ()=>Number, required: false, default: 0 })
   @Prop({ type: Number, required: false })

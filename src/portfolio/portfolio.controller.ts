@@ -71,7 +71,7 @@ export class PortfolioController{
     if(!portf){
       throw new NotFoundException()
     }
-    if(!(portf.userId === user._id.toString() || portf.public)){
+    if(!(portf.userId === user._id.toString() || portf.isPublic)){
       throw new UnauthorizedException("it's not yours portfolio")
     }
   }
