@@ -67,9 +67,9 @@ export class PortfolioController{
   async checkAuthority(id: string, user: UserModel){
     const portf = await this.portfolioService.getPortfolioById(id)
     if(!portf){
-      throw new NotFoundException()
+      throw new NotFoundException() 
     }
-    if(!(portf.userId === user._id.toString() || portf.isPublic)){
+    if(portf.userId.toString() !== user._id.toString()){
       throw new UnauthorizedException("it's not yours portfolio")
     }
   }

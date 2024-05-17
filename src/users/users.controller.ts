@@ -52,10 +52,8 @@ export class UserController {
   @AuthRequired
   @Post("favorite/:id")
   async addFavoritePortfolio(@UserParamDecorator() user: UserModel, @Param('id') id: string){
-    console.log(user.favoritePortfolios)
     if(!user.favoritePortfolios.includes(id)){
       user.favoritePortfolios = [...user.favoritePortfolios, id]
-      console.log(id)
       await user.save()
     }
   }
@@ -65,7 +63,6 @@ export class UserController {
   @Delete("favorite/:id")
   async deleteFavoritePortfolio(@UserParamDecorator() user: UserModel, @Param('id') id: string){
     user.favoritePortfolios = user.favoritePortfolios.filter(e=>e!==id)
-    console.log(id)
     await user.save()
   }
 

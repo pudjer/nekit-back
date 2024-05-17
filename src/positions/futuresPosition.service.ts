@@ -2,25 +2,25 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { FuturesPosition, FuturesPositionWithoutId, changeFuturesPositionDTO } from './model/FuturesPosition';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { ExchangeController } from 'src/exchange/exchange.controller';
 import { TelegramService } from 'src/users/telegram.service';
 import { UserService } from 'src/users/users.service';
 import { PortfolioService } from 'src/portfolio/portfolio.service';
 import { ConfigService } from '@nestjs/config';
 import { Portfolio } from 'src/portfolio/Portfolio';
-import { Format, Markup } from 'telegraf';
+import { ExchangeService } from 'src/exchange/exchange.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class FuturesPositionService {
   constructor(
     @InjectModel(FuturesPosition.name) private positionModel: Model<FuturesPosition>,
-    private exchange: ExchangeController,
+    private exchange: ExchangeService,
     private telegram: TelegramService,
     private userService: UserService,
     private portfolioService: PortfolioService,
     private configService: ConfigService
-  ){}
+  ){
+  }
 
 
   async createPosition(position: FuturesPositionWithoutId){
@@ -47,46 +47,59 @@ export class FuturesPositionService {
     return pos
   }
 
-  async notifyClosingPositions(){
+
+  
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  async updatePositionsAndNotify(){
     
     const poses = await this.positionModel.find()
+    const date = new Date()
     const toNotify: MaybeCanceledPositions[] = []
     for(const pos of poses){
-      const currentPrice = this.exchange.tokensMap.get(pos.symbol).current_price || NaN
+      let tokenPrice = this.exchange.tokensMap.get(pos.symbol)?.current_price 
+      const currencyRate = this.exchange.currenciesMap.get(pos.currency)?.exchangeRateToUsd
+      if(!tokenPrice || ! currencyRate)continue
+      tokenPrice = tokenPrice * currencyRate
+
+
       let notifiedNow = false
       let priceNow
       if(pos.quantity>0){
-        if((pos.takeProfit || NaN) < currentPrice){
-          if(!pos.notified)toNotify.push({pos, what: "Take Profit", currentPrice})
+        if((pos.takeProfit || NaN) < tokenPrice){
+          if(!pos.notified)toNotify.push({pos, what: "Take Profit", currentPrice: tokenPrice})
           notifiedNow = true
           priceNow = pos.takeProfit
         }
-        if((pos.stopLoss || NaN) > currentPrice){
-          if(!pos.notified)toNotify.push({pos, what: "Stop Loss", currentPrice})
+        if((pos.stopLoss || NaN) > tokenPrice){
+          if(!pos.notified)toNotify.push({pos, what: "Stop Loss", currentPrice: tokenPrice})
           notifiedNow = true
           priceNow = pos.stopLoss
         }
       }else{
-        if((pos.takeProfit || NaN) > currentPrice){
-          if(!pos.notified)toNotify.push({pos, what: "Take Profit", currentPrice})
+        if((pos.takeProfit || NaN) > tokenPrice){
+          if(!pos.notified)toNotify.push({pos, what: "Take Profit", currentPrice: tokenPrice})
           notifiedNow = true
           priceNow = pos.takeProfit
 
         }
-        if((pos.stopLoss || NaN) < currentPrice){
-          if(!pos.notified)toNotify.push({pos, what: "Stop Loss", currentPrice})
+        if((pos.stopLoss || NaN) < tokenPrice){
+          if(!pos.notified)toNotify.push({pos, what: "Stop Loss", currentPrice: tokenPrice})
           notifiedNow = true
           priceNow = pos.stopLoss
         }
       }
-      if(pos.margin + (currentPrice * pos.quantity - pos.initialPrice * pos.quantity) < 0){
-        if(!pos.notified)toNotify.push({pos, what: "Ликвидация", currentPrice})
+      const value = pos.margin + (tokenPrice * pos.quantity - pos.initialPrice * pos.quantity)
+      if(value < 0){
+        if(!pos.notified)toNotify.push({pos, what: "Ликвидация", currentPrice: pos.initialPrice-(pos.margin /pos.quantity)})
         notifiedNow = true
         priceNow = pos.initialPrice - (pos.margin / pos.quantity)
       }
       if(pos.notified!==notifiedNow){
         pos.notified = notifiedNow
-        pos.exitPrice = priceNow
+        if(priceNow){
+          pos.exitPrice = priceNow
+          pos.exitTimestamp = date
+        }
         pos.save()
       }
     }
@@ -97,8 +110,8 @@ export class FuturesPositionService {
         const userTgId = portfolio && (await this.userService.getUserById(portfolio.userId)).tgId
         if(!userTgId)continue
         const notions = userTgId && userMap.get(userTgId)
-        const [currentPrice, cur] = this.exchange.convertFromUSD(posCanceled.currentPrice, posCanceled.pos.currency)
-        const [exitPrice, currency] = posCanceled.what !== "Ликвидация"  ? this.exchange.convertFromUSD(posCanceled.what==="Take Profit" ? posCanceled.pos.takeProfit : posCanceled.pos.stopLoss, posCanceled.pos.currency) : [undefined, undefined]
+        const [currentPrice, cur] = [posCanceled.currentPrice, posCanceled.pos.currency]
+        const [exitPrice, currency] = posCanceled.what !== "Ликвидация"  ? [posCanceled.what==="Take Profit" ? posCanceled.pos.takeProfit : posCanceled.pos.stopLoss, posCanceled.pos.currency] : [undefined, undefined]
         const notion = `Актив: ${posCanceled.pos.symbol},
         ${posCanceled.what} ${(exitPrice && currency) ? exitPrice+" "+currency : ""},
         Текущая цена: ${currentPrice.toLocaleString()} ${cur},

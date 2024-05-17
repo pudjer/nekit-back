@@ -19,7 +19,7 @@ export class TelegramService {
     const userId = ctx.startPayload;
     if(!userId)ctx.reply("Добро пожаловать!")
     try{
-      this.userService.addTg(userId, userTgId)
+      await this.userService.addTg(userId, userTgId)
     }catch(e){
       ctx.reply("Не получилось привезать аккаунт")
     }

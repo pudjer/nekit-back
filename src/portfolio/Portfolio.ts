@@ -9,7 +9,7 @@ import { HydratedDocument } from "mongoose";
 export class Portfolio{
 
   @ApiProperty({ type: String })
-  @Prop({ type:  ()=>String, required: true })
+  @Prop({ type: String, required: true })
   @IsString()
   userId: string
 
@@ -19,24 +19,23 @@ export class Portfolio{
 
 
   @ApiProperty({ type: String, required: false })
-  @Prop({ default: '' })
+  @Prop({ type: String, default: '' })
   @IsString()
   description: string = ''
 
   @ApiProperty({ type: String, required: true })
-  @Prop({ type: ()=>String, required: true })
+  @Prop({ type: String, required: true })
   @IsString()
   name: string
 
 
-  @ApiProperty({ type: ()=>String, required: false, default: false })
-  @Prop({ type: String, required: false })
+  @ApiProperty({ type: String, required: false, default: false })
+  @Prop({ type: Boolean, required: false })
   isPublic?: boolean
   
-  @ApiProperty({ type:  ()=>Number, required: false, default: 0 })
+  @ApiProperty({ type:  Number, required: false, default: 0 })
   @Prop({ type: Number, required: false })
   likes: number
-
 
 }
 

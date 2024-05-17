@@ -14,7 +14,6 @@ export class FuturesPositionController{
     private positionService: FuturesPositionService,
     private portfolioController: PortfolioController,
   ){
-    setTimeout(this.notifyUsers.bind(this), 10000)
   }
 
   @ApiResponse({ type: [FuturesPosition] })
@@ -61,11 +60,6 @@ export class FuturesPositionController{
     this.portfolioController.checkAuthority(pos.portfolioId, user)
   }
 
-
-  @Cron(CronExpression.EVERY_10_SECONDS)
-  async notifyUsers(){
-    this.positionService.notifyClosingPositions()
-  }
 
 
 }

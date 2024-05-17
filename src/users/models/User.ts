@@ -13,13 +13,13 @@ export class User{
 
     @MaxLength(25)
     @ApiProperty({type: String, maxLength: 25})
-    @Prop({ type: () => String, required: true, unique: true})
+    @Prop({ type:  String, required: true, unique: true})
     @IsString()
     @Matches(/^[A-Za-z0-9]*$/)
     username: string
 
     @ApiPropertyOptional({ type: String })
-    @Prop({ type: () => String, unique: true, required: false, sparse: true})
+    @Prop({ type: String, unique: true, required: false, sparse: true})
     @IsEmail()
     @IsOptional()
     email?: string
@@ -29,40 +29,40 @@ export class User{
 
     @ApiProperty({type: Boolean})
     @IsBoolean()
-    @Prop({ type: () => Boolean, default: false })
+    @Prop({ type: Boolean, default: false })
     blocked: boolean
 
     @ApiProperty({type: Boolean})
     @IsBoolean()
-    @Prop({ type: () => Boolean, default: false })
+    @Prop({ type: Boolean, default: false })
     isAdmin: boolean
 
     @ApiProperty({type: Date})
-    @Prop({ type: () => Date, default: () => new Date() })
+    @Prop({ type: Date, default: () => new Date() })
     @IsISO8601()
     date_registered: Date
 
 
     @IsString()
-    @Prop({ type: () => String, required: true })
+    @Prop({ type: String, required: true })
     hashedPassword: string
     
     @ApiProperty({ type: Date })
     @IsISO8601()
-    @Prop({ type: () => Date, default: () => new Date(0) })
+    @Prop({ type: Date, default: () => new Date(0) })
     valid_since: Date
 
     @ApiPropertyOptional({ type: Number })
-    @Prop({ type: () => Number, unique: true, required: false, sparse: true})
+    @Prop({ type: Number, required: false, unique: false})
     @IsOptional()
     tgId?: number
 
-    @Prop({ type: () => Number, required: false })
+    @Prop({ type: Number, required: false })
     tgPassword?: number
 
 
     @ApiProperty({ type: [String], required: false })
-    @Prop({ type: () => [String], default: []})
+    @Prop({ type: [String], default: []})
     favoritePortfolios: string[]
 
 }

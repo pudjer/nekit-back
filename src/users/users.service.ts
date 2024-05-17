@@ -83,7 +83,7 @@ export class UserService {
     async addTg(userId: string, tgId: number){
         const user = await this.userModel.findById(userId)
         user.tgId = tgId
-        user.save()
+        await user.save()
     }
 
 }

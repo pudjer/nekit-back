@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { SpotPosition, SpotPositionWithoutId, changeSpotPositionDTO } from './model/SpotPosition';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { ExchangeController } from 'src/exchange/exchange.controller';
 
 @Injectable()
 export class SpotPositionService {

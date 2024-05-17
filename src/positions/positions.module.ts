@@ -9,6 +9,8 @@ import { SpotPositionService } from './SpotPosition.service';
 import { PortfolioModule } from 'src/portfolio/portfolio.module';
 import { ExchangeModule } from 'src/exchange/exchange.module';
 import { UserModule } from 'src/users/users.module';
+import { CurrencyMark, CurrencyMarkSchema } from './model/CurrencyMark';
+import { PositionService } from './positions.service';
 
 @Module({
   imports:[
@@ -20,13 +22,14 @@ import { UserModule } from 'src/users/users.module';
       {
         name: SpotPosition.name,
         schema: SpotPositionScheme
-      }
+      },
+      
     ]),
     PortfolioModule,
     ExchangeModule,
-    UserModule
+    UserModule,
   ],
-  providers: [ SpotPositionService, FuturesPositionService ],
+  providers: [ SpotPositionService, FuturesPositionService, PositionService ],
   controllers: [SpotPositionController, FuturesPositionController ]
 })
 export class PositionsModule {}

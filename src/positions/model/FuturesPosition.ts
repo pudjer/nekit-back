@@ -2,15 +2,15 @@ import { Prop, SchemaFactory } from "@nestjs/mongoose";
 import { Schema } from "@nestjs/mongoose";
 import { ApiProperty, OmitType } from "@nestjs/swagger";
 import { PartialType } from "@nestjs/mapped-types"
-import { IsString, IsNotEmpty, IsISO8601 } from "class-validator";
+import { IsString, IsNotEmpty, IsISO8601, IsOptional } from "class-validator";
 import { HydratedDocument } from "mongoose";
 
 
 @Schema({versionKey: false})
 export class FuturesPosition{
 
-  @ApiProperty({ type: String })
-  @Prop({ required: true })
+  @ApiProperty({ type: String, required: true })
+  @Prop({ type: String, required: true })
   @IsString()
   portfolioId: string;
 
@@ -18,58 +18,70 @@ export class FuturesPosition{
   @ApiProperty({ type: String })
   _id: string
 
-  @ApiProperty({ type: String })
-  @Prop({ required: true })
+  @ApiProperty({ type: String, required: true })
+  @Prop({ type: String, required: true })
   @IsString()
   symbol: string;
 
-  @ApiProperty({ type: String })
-  @Prop({ required: false })
+  @ApiProperty({ type: String, required: true })
+  @Prop({ type: String, required: true })
   currency: string;
 
-  @ApiProperty({ type: Number })
-  @Prop({ required: true })
+  @ApiProperty({ type: Number, required: true })
+  @Prop({ type: Number, required: true })
   @IsNotEmpty()
   quantity: number;
 
-  @ApiProperty({ type: Number })
-  @Prop({ required: true })
+  @ApiProperty({ type: Number, required: true })
+  @Prop({ type: Number, required: true })
   @IsNotEmpty()
   margin: number;
 
   @ApiProperty({ type: Number })
-  @Prop({ required: true, default: 1 })
+  @Prop({ type: Number, required: true, default: 1 })
   @IsNotEmpty()
   leverage: number;
 
-  @ApiProperty({ type: Date })
-  @Prop({ required: true, default: ()=> new Date() })
+  @ApiProperty({ type: Date, required: true })
+  @Prop({ type: Date, required: true, default: ()=> new Date() })
   @IsISO8601()
   timestamp: Date;
 
-  @ApiProperty({ type: Number })
-  @Prop({ required: true })
+  @ApiProperty({ type: Number, required: true })
+  @Prop({ type: Number, required: true })
   @IsNotEmpty()
   initialPrice: number;
 
+  @ApiProperty({ type: Number, required: true })
+  @Prop({ type: Number, required: true })
+  @IsNotEmpty()
+  initialCurrencyPrice: number;
+
   @ApiProperty({ type: Number })
-  @Prop({ required: false })
+  @Prop({ type: Number, required: false })
   stopLoss: number;
 
   @ApiProperty({ type: Number })
-  @Prop({ required: false })
+  @Prop({ type: Number, required: false })
   takeProfit: number;
 
   @ApiProperty({ type: Number })
-  @Prop({ required: false })
-  exitPrice: number;
+  @Prop({ type: Number, required: false })
+  exitPrice?: number;
 
 
-  @Prop({ required: false })
+  @Prop({ type: Boolean, required: false })
   notified?: boolean;
 
+  @ApiProperty({ type: Date, required: false })
+  @Prop({ type: Date, required: false})
+  @IsISO8601()
+  @IsOptional()
+  exitTimestamp?: Date;
 
 }
+
+
 
 
 export class changeFuturesPositionDTO extends PartialType(OmitType(FuturesPosition, ['_id', 'portfolioId'])){}
