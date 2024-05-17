@@ -77,7 +77,7 @@ export class PortfolioController{
   @AuthRequired
   @Post("tgreport")
   async toTg(@UserParamDecorator() user: UserModel, @Body() portfolio: Report){
-    user.tgId && this.telegram.bot.telegram.sendMessage(user.tgId, portfolio.report)
+    user.tgId && this.telegram.bot.telegram.sendDocument(user.tgId, portfolio.report)
   }
 
 }
