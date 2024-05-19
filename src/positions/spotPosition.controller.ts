@@ -1,5 +1,5 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Query, UnauthorizedException } from "@nestjs/common";
-import { SpotPositionService } from "./SpotPosition.service";
+import { SpotPositionService } from "./spotPosition.service";
 import { SpotPosition, SpotPositionWithoutId, changeSpotPositionDTO } from "./model/SpotPosition";
 import { ApiNoContentResponse, ApiResponse } from "@nestjs/swagger";
 import { AuthRequired } from "src/users/decorators/AuthRequired";

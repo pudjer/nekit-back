@@ -5,7 +5,7 @@ import { SpotPosition, SpotPositionScheme } from './model/SpotPosition';
 import { FuturesPositionService } from './futuresPosition.service';
 import { FuturesPositionController } from './futuresPosition.controller';
 import { SpotPositionController } from './spotPosition.controller';
-import { SpotPositionService } from './SpotPosition.service';
+import { SpotPositionService } from './spotPosition.service';
 import { PortfolioModule } from 'src/portfolio/portfolio.module';
 import { ExchangeModule } from 'src/exchange/exchange.module';
 import { UserModule } from 'src/users/users.module';
