@@ -32,15 +32,12 @@ export class Portfolio{
   @ApiProperty({ type: String, required: false, default: false })
   @Prop({ type: Boolean, required: false })
   isPublic?: boolean
-  
-  @ApiProperty({ type:  Number, required: false, default: 0 })
-  @Prop({ type: Number, required: false })
-  likes: number
+
 
 }
 
-export class PortfolioCreateDTO extends OmitType(Portfolio, ['_id', "likes"]){}
-export class PortfolioChangeDTO extends OmitType(Portfolio, ['_id', 'userId', "likes"]){}
+export class PortfolioCreateDTO extends OmitType(Portfolio, ['_id']){}
+export class PortfolioChangeDTO extends OmitType(Portfolio, ['_id', 'userId']){}
 
 export type PortfolioModel = HydratedDocument<Portfolio>
 export const PortfolioScheme = SchemaFactory.createForClass(Portfolio);

@@ -112,10 +112,10 @@ export class FuturesPositionService {
         const notions = userTgId && userMap.get(userTgId)
         const [currentPrice, cur] = [posCanceled.currentPrice, posCanceled.pos.currency]
         const [exitPrice, currency] = posCanceled.what !== "Ликвидация"  ? [posCanceled.what==="Take Profit" ? posCanceled.pos.takeProfit : posCanceled.pos.stopLoss, posCanceled.pos.currency] : [undefined, undefined]
-        const notion = `Актив: ${posCanceled.pos.symbol},
-        ${posCanceled.what} ${(exitPrice && currency) ? exitPrice+" "+currency : ""},
-        Текущая цена: ${currentPrice.toLocaleString()} ${cur},
-        Текущая прибыль: ${((currentPrice * posCanceled.pos.quantity) - (posCanceled.pos.initialPrice * posCanceled.pos.quantity)).toLocaleString()} ${cur},
+        const notion = `Актив: ${posCanceled.pos.symbol}
+        ${posCanceled.what} ${(exitPrice && currency) ? exitPrice+" "+currency : ""}
+        Текущая цена: ${currentPrice.toLocaleString()} ${cur}
+        Текущая прибыль: ${((currentPrice * posCanceled.pos.quantity) - (posCanceled.pos.initialPrice * posCanceled.pos.quantity)).toLocaleString()} ${cur}
         Портфель: ${portfolio.name}
         
         `;
