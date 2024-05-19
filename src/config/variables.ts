@@ -13,11 +13,6 @@ export const validationSchema = Joi.object({
     JWT_REFRESH_EXPIRATION_TIME: [Joi.number(), Joi.string().regex(/^\d+( days|d|h| hrs|m|s|y)?$/)],
     MONGO_USERNAME: Joi.string(),
     MONGO_PASSWORD: Joi.string(),
-    MONGO_PORT: Joi.number(),
-    SMTP_HOST: Joi.string(),
-    SMTP_PORT: Joi.number(),
-    SMTP_USER: Joi.string(),
-    SMTP_PASSWORD: Joi.string(),
     TELEGRAM_TOKEN: Joi.string(),
     HOST: Joi.string().default("http://localhost:5173")
 })

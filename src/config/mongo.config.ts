@@ -8,14 +8,12 @@ export const getMongoConfig = async (configService: ConfigService): Promise<Mong
     }
 }
 const getMongoURI = (configService: ConfigService) => {
-    return 'mongodb://' +
+    return 'mongodb+srv://' +
         configService.get('MONGO_USERNAME') +
         ':' +
         configService.get('MONGO_PASSWORD') +
         '@' +
-        (configService.get('MONGO_HOST')) +
-        ':' +
-        configService.get('MONGO_PORT')
+        (configService.get('MONGO_HOST'))
 
 
 }
