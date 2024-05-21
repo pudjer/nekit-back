@@ -9,7 +9,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
   app.enableCors({
-    origin: 'http://localhost',// Allow requests from these origins
     credentials: true, // Allow credentials (e.g., cookies)
     allowedHeaders: '*',
   });
