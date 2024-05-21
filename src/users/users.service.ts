@@ -71,6 +71,7 @@ export class UserService {
             toChange.password = hashedPassword
         }
         for(const key in toChange){
+            if(key === "password")user.hashedPassword = toChange.password
             user[key] = toChange[key]
         }
         await user.save()
