@@ -20,14 +20,14 @@ export class FuturesPositionController{
   @Get('all')
   async getPositionsByPortfolioId(@Query('portfolioId') portfolioId: string): Promise<FuturesPosition[]> {
     if(!portfolioId) throw new BadRequestException('specify profileId')
-    return this.positionService.getPositionsByPortfolioId(portfolioId)
+    return await this.positionService.getPositionsByPortfolioId(portfolioId)
   }
 
   @ApiNoContentResponse()
   @AuthRequired
   @Delete(':id')
   async delete(@UserParamDecorator() user: UserModel, @Param('id') id) {
-    this.checkAuthority(id, user)
+    await this.checkAuthority(id, user)
     await this.positionService.deletePositionById(id)
   }
   
@@ -35,7 +35,7 @@ export class FuturesPositionController{
   @AuthRequired
   @Patch(':id')
   async change(@UserParamDecorator() user: UserModel, @Body() toChange: changeFuturesPositionDTO, @Param('id') id): Promise<FuturesPosition> {
-    this.checkAuthority(id, user)
+    await this.checkAuthority(id, user)
     return await this.positionService.change(id, toChange)
   }
 
@@ -43,21 +43,21 @@ export class FuturesPositionController{
   @AuthRequired
   @Post()
   async create(@UserParamDecorator() user: UserModel, @Body() pos: FuturesPositionWithoutId, @Param('id') id): Promise<FuturesPosition> {
-    this.portfolioController.checkAuthority(pos.portfolioId, user)
+    await this.portfolioController.checkAuthority(pos.portfolioId, user)
     return await this.positionService.createPosition(pos)
   }
 
   @ApiResponse({ type: [FuturesPosition] })
   @Get(':id')
   async getPositionById(@Param('id') id: string): Promise<FuturesPosition> {
-    return this.positionService.getPositionById(id)
+    return await this.positionService.getPositionById(id)
   }
   async checkAuthority(id: string, user: UserModel){
     const pos = await this.positionService.getPositionById(id)
     if(!pos){
       throw new NotFoundException()
     }
-    this.portfolioController.checkAuthority(pos.portfolioId, user)
+    await this.portfolioController.checkAuthority(pos.portfolioId, user)
   }
 
 

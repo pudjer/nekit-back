@@ -3,7 +3,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
 import {UserModule} from '../users/users.module';
 import {getMongoConfig} from "../config/mongo.config";
 import * as cookieParser from "cookie-parser";
-import {APP_INTERCEPTOR, APP_PIPE} from "@nestjs/core";
+import {APP_FILTER, APP_INTERCEPTOR, APP_PIPE} from "@nestjs/core";
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { MongooseModule } from '@nestjs/mongoose';
 import { stripInterceptor } from './stripInterceptor';

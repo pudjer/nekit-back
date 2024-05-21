@@ -26,7 +26,7 @@ export class SpotPositionController{
   @AuthRequired
   @Delete(':id')
   async delete(@UserParamDecorator() user: UserModel, @Param('id') id) {
-    this.checkAuthority(id, user)
+    await this.checkAuthority(id, user)
     await this.positionService.deletePositionById(id)
   }
   
@@ -34,7 +34,7 @@ export class SpotPositionController{
   @AuthRequired
   @Patch(':id')
   async change(@UserParamDecorator() user: UserModel, @Body() toChange: changeSpotPositionDTO, @Param('id') id): Promise<SpotPosition> {
-    this.checkAuthority(id, user)
+    await this.checkAuthority(id, user)
     return await this.positionService.change(id, toChange)
   }
 
@@ -42,14 +42,14 @@ export class SpotPositionController{
   @AuthRequired
   @Post()
   async create(@UserParamDecorator() user: UserModel, @Body() pos: SpotPositionWithoutId): Promise<SpotPosition> {
-    this.portfolioController.checkAuthority(pos.portfolioId, user)
+   await  this.portfolioController.checkAuthority(pos.portfolioId, user)
     return await this.positionService.createPosition(pos)
   }
 
   @ApiResponse({ type: [SpotPosition] })
   @Get(':id')
   async getPositionById(@Param('id') id: string): Promise<SpotPosition> {
-    return this.positionService.getPositionById(id)
+    return await this.positionService.getPositionById(id)
   }
   
   async checkAuthority(id: string, user: UserModel){
@@ -57,7 +57,7 @@ export class SpotPositionController{
     if(!pos){
       throw new NotFoundException()
     }
-    this.portfolioController.checkAuthority(pos.portfolioId, user)
+    await this.portfolioController.checkAuthority(pos.portfolioId, user)
   }
 
 }

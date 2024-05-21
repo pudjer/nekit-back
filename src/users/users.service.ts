@@ -39,8 +39,9 @@ export class UserService {
     }
     
     validateAndGetUser<T, J>(cred: T, options?: {password: J}): T extends Credentials ? Promise<UserModel> : T extends { username: string } ? J extends false ? Promise<UserModel> : never : never
-    async validateAndGetUser(toValidate: {username: string, password?: string}, options?: {password: boolean}){
-        const user = await this.findByUsername(toValidate.username);
+    async validateAndGetUser(toValidate: {username: string, password?: string, _id?: string}, options?: {password: boolean}){
+        
+        const user = toValidate._id ? await this.getUserById(toValidate._id) : await this.findByUsername(toValidate.username);
         if(options?.password){
             if (!await bcrypt.compare(toValidate.password, user.hashedPassword)) {
                throw new UnauthorizedException() 
@@ -65,8 +66,11 @@ export class UserService {
 
     async change(id: string, toChange: UserChangeDTO): Promise<UserModel> {
         const user = await this.userModel.findById(id)
-        const hashedPassword = await bcrypt.hash(toChange.password, 4)
         const { password, ...userNoPassw } = toChange
+        if('password' in toChange){
+            const hashedPassword = await bcrypt.hash(toChange.password, 4)
+            toChange.password = hashedPassword
+        }
         for(const key in toChange){
             user[key] = toChange[key]
         }
