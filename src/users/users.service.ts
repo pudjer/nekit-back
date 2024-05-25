@@ -66,12 +66,12 @@ export class UserService {
 
     async change(id: string, toChange: UserChangeDTO): Promise<UserModel> {
         const user = await this.userModel.findById(id)
-        const { password, ...userNoPassw } = toChange
         if('password' in toChange){
             const hashedPassword = await bcrypt.hash(toChange.password, 4)
             toChange.password = hashedPassword
         }
         for(const key in toChange){
+            if(key === "password")user.hashedPassword = toChange.password
             user[key] = toChange[key]
         }
         await user.save()
