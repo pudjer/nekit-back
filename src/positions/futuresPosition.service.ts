@@ -18,7 +18,6 @@ export class FuturesPositionService {
     private telegram: TelegramService,
     private userService: UserService,
     private portfolioService: PortfolioService,
-    private configService: ConfigService
   ){
   }
 
@@ -56,6 +55,7 @@ export class FuturesPositionService {
     const date = new Date()
     const toNotify: MaybeCanceledPositions[] = []
     for(const pos of poses){
+      if(pos.exitPrice)continue
       let tokenPrice = this.exchange.tokensMap.get(pos.symbol)?.current_price 
       const currencyRate = this.exchange.currenciesMap.get(pos.currency)?.exchangeRateToUsd
       if(!tokenPrice || ! currencyRate)continue

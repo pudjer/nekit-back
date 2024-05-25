@@ -39,7 +39,6 @@ export class FuturesPosition{
 
   @ApiProperty({ type: Number })
   @Prop({ type: Number, required: true, default: 1 })
-  @IsNotEmpty()
   leverage: number;
 
   @ApiProperty({ type: Date, required: true })
