@@ -69,9 +69,6 @@ export class FuturesPosition{
   exitPrice?: number;
 
 
-  @Prop({ type: Boolean, required: false })
-  notified?: boolean;
-
   @ApiProperty({ type: Date, required: false })
   @Prop({ type: Date, required: false})
   @IsISO8601()

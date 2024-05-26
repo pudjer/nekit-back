@@ -62,46 +62,37 @@ export class FuturesPositionService {
       tokenPrice = tokenPrice * currencyRate
 
 
-      let notifiedNow = false
       let priceNow
       if(pos.quantity>0){
         if((pos.takeProfit || NaN) < tokenPrice){
-          if(!pos.notified)toNotify.push({pos, what: "Take Profit", currentPrice: tokenPrice})
-          notifiedNow = true
+          toNotify.push({pos, what: "Take Profit", currentPrice: tokenPrice})
           priceNow = pos.takeProfit
         }
         if((pos.stopLoss || NaN) > tokenPrice){
-          if(!pos.notified)toNotify.push({pos, what: "Stop Loss", currentPrice: tokenPrice})
-          notifiedNow = true
+          toNotify.push({pos, what: "Stop Loss", currentPrice: tokenPrice})
           priceNow = pos.stopLoss
         }
       }else{
         if((pos.takeProfit || NaN) > tokenPrice){
-          if(!pos.notified)toNotify.push({pos, what: "Take Profit", currentPrice: tokenPrice})
-          notifiedNow = true
+          toNotify.push({pos, what: "Take Profit", currentPrice: tokenPrice})
           priceNow = pos.takeProfit
 
         }
         if((pos.stopLoss || NaN) < tokenPrice){
-          if(!pos.notified)toNotify.push({pos, what: "Stop Loss", currentPrice: tokenPrice})
-          notifiedNow = true
+          toNotify.push({pos, what: "Stop Loss", currentPrice: tokenPrice})
           priceNow = pos.stopLoss
         }
       }
       const value = pos.margin + (tokenPrice * pos.quantity - pos.initialPrice * pos.quantity)
       if(value < 0){
-        if(!pos.notified)toNotify.push({pos, what: "Ликвидация", currentPrice: pos.initialPrice-(pos.margin /pos.quantity)})
-        notifiedNow = true
+        toNotify.push({pos, what: "Ликвидация", currentPrice: pos.initialPrice-(pos.margin /pos.quantity)})
         priceNow = pos.initialPrice - (pos.margin / pos.quantity)
       }
-      if(pos.notified!==notifiedNow){
-        pos.notified = notifiedNow
-        if(priceNow){
-          pos.exitPrice = priceNow
-          pos.exitTimestamp = date
-        }
-        pos.save()
+      if(priceNow){
+        pos.exitPrice = priceNow
+        pos.exitTimestamp = date
       }
+        pos.save()
     }
     const userMap = new Map<number, {notion: string, portfolio: Portfolio, pos: FuturesPosition}[]>()
     for(const posCanceled of toNotify){
@@ -126,7 +117,7 @@ export class FuturesPositionService {
       }
     }
     for(const [userTgId, notions] of userMap.entries()){
-      this.telegram.bot.telegram.sendMessage(userTgId, notions.reduce((a, e)=>e.notion+'\n' ,"Закртыты позиции:\n"))
+      this.telegram.bot.telegram.sendMessage(userTgId, notions.reduce((a, e)=>a + e.notion+'\n' ,"Закртыты позиции:\n"))
     }
   }
 }
